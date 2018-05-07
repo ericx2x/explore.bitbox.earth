@@ -25,6 +25,7 @@ class Transaction extends Component {
 
     this.props.bitbox.Transaction.details(id)
     .then((result) => {
+      console.log(result)
       this.setState({
         blockhash: result.blockhash,
         blockheight: result.blockheight,
@@ -66,21 +67,33 @@ class Transaction extends Component {
         }
       });
     }
-
+  
     let vout = [];
     if(this.state.vout) {
       this.state.vout.forEach((v, ind) => {
-        vout.push(
-          <li key={ind}>
-            <Link
-              to={`/address/${this.props.bitbox.Address.toCashAddress(v.scriptPubKey.addresses[0])}`}>
-              {this.props.bitbox.Address.toCashAddress(v.scriptPubKey.addresses[0])}
-            </Link>
-          </li>
-        );
+        if(v.scriptPubKey.addresses.length) {
+          // do stuff w/ addresses
+          vout.push(
+            <li key={ind}>
+              <Link
+                to={`/address/${this.props.bitbox.Address.toCashAddress(v.scriptPubKey.addresses[0])}`}>
+                {this.props.bitbox.Address.toCashAddress(v.scriptPubKey.addresses[0])}
+              </Link>
+            </li>
+          );
+        } else if(!v.scriptPubKey.addresses) {
+          // do other stuff
+          vout.push(
+            <li key={ind}>
+              <Link
+                to={`/address/${this.props.bitbox.Address.toCashAddress(v.scriptPubKey.addresses[0])}`}>
+                {this.props.bitbox.Address.toCashAddress(v.scriptPubKey.addresses[0])}
+              </Link>
+            </li>
+          );
+        }
       });
     }
-
     return (
       <div className='Transaction'>
         <h2 className='l-box'><i className="fas fa-exchange-alt" /> Transaction {this.state.id}</h2>
